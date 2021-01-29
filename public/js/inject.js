@@ -3,31 +3,34 @@
   const url = new URL(script.dataset.url)
   const { prefix } = script.dataset
 
-  const rewrite = (inputUrl) => {
-    let proxy = inputUrl
+  const rewrite = (original) => {
+    return original.startsWith("data:") ? original : prefix + resolveLink(original, url.hostname)
+  } 
 
-    if(inputUrl.startsWith(window.location.origin + "/") && !inputUrl.startsWith(window.location.origin + prefix)) {
-      proxy = '/' + inputUrl.split('/').splice(3).join('/')
+  const resolveLink = (resource, domain) => {
+    let url = new URL("https://" + domain)
+    let { pathname, host } = url
+
+    if(resource.substring(0, 2) == "//") {
+      resource = resource.substring(2)
+    }
+    else if(resource.substring(0, 1) == '/') {
+      resource = `${host}${resource}`
+    }
+    else if(resource.substring(0, 2) == "./") {
+      resource = `${host}${path.resolve(pathname, resource)}`
+    }
+    else if(resource.substring(0, 3) == "../" || !resource.startsWith("http")) {
+      resource = `${host}/${resource}`
     }
 
-    if(inputUrl.startsWith("//")) {
-      proxy = "https:" + inputUrl
-    }
-    else if(inputUrl.startsWith('/') && !inputUrl.startsWith(prefix)) {
-      proxy = url.origin + inputUrl
-    }
-    
-    if(inputUrl.startsWith("http")) {
-      let _url = new URL(inputUrl)
-      proxy = prefix + _url.origin + _url.path
-    }
-
-    return proxy
+    return resource.replace(/^(https?:|)\/\//, "")
   }
 
   const rFetch = window.fetch
   window.fetch = function(_url, options) {
     _url = rewrite(_url)
+    options.mode = "no-cors"
     return rFetch.apply(this, arguments)
   }
 
@@ -41,6 +44,7 @@
   document.createElement = function(_tag) {
     let element = rElement.call(document, _tag)
     let tag = _tag.toLowerCase()
+    
     if(["script", "iframe", "embed", "img"].includes(tag)) {
       Object.defineProperty(element._proto_, "src", {
         set: (value) => element.setAttribute("src", rewrite(value))

@@ -6,12 +6,26 @@
 	<script>
 		const MODE = "<%- mode %>"
 	</script>
+  <script defer src="/js/index.js"></script>
 	<link rel="stylesheet" href="/css/index.css" />
 </head>
 <body>
 	<div id="app">
-		<img class="app-logo" src="/icons/apple-icon.png" alt="Nathan Pham Logo" />
-		<p class="app-caption">Edit templates/index.html and save to reload.</p>
+    <main>
+      <h1>ultimate-proxy</h1>
+      <input placeholder="example.com" />
+      <div class="app-options">
+        <div>
+          <a href="/help">
+            <i class="fas fa-question"></i>
+          </a>
+          <a href="https://github.com/nathan-pham/ultimate-proxy">
+            <i class="fab fa-github"></i>
+          </a>
+        </div>
+        <button>submit</button>
+      </div>
+    </main>
 	</div>
 </body>
 </html>

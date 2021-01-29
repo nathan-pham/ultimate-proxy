@@ -1,8 +1,8 @@
 {
   "name": "express-ejs",
   "short_name": "express-ejs",
-  "theme_color": "#f5cb5c",
-  "background_color": "#242423",
+  "theme_color": "#ef233c",
+  "background_color": "#2b2d42",
   "display": "standalone",
   "scope": "/",
   "start_url": "/",

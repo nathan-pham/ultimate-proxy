@@ -1,12 +1,20 @@
+#app {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  text-align: center;
+}
+
 #app .app-shrug {
 	font-size: 5rem;
 	white-space: nowrap;
-	color: var(--black);
+	color: var(--secondary-dark);
 	margin: 0;
 }
 
 #app .app-error {
 	font-size: 1.25rem;
-	color: var(--black);
+	color: var(--secondary-dark);
 	margin: 0;
 }

@@ -1,6 +1,7 @@
+const mime = require("mime-types")
 const fetch = require("node-fetch")
 const rewrite = require("./rewrite")
-const { types } = require("./utils")
+const { btoa, atob, startsWith } = require("./utils")
 
 module.exports = (config) => {
   return async (req, res, next) => {
@@ -17,6 +18,7 @@ module.exports = (config) => {
         headers: {},
         method: req.method,
         rejectUnauthorized: false,
+        mode: "no-cors"
       },
       prefix: config.prefix,
       injection: config.injection,
@@ -32,12 +34,6 @@ module.exports = (config) => {
     catch(e) {}
 
     Object.assign(proxy.request.headers, req.headers || {})
-    delete proxy.request.headers["host"]
-
-    // let origin = proxy.request.headers["origin"]
-    // if(origin) {
-    //   proxy.request.headers["origin"] = rewrite.origin(origin, proxy)
-    // }
 
     let cookie = proxy.request.headers["cookie"]
     if(cookie) {
@@ -51,15 +47,9 @@ module.exports = (config) => {
       proxy.request.headers["cookie"] = newCookies.join("; ")
     }
 
-		delete proxy.request.headers["accept-encoding"]
-
-    // const Location = `${ config.prefix }${ proxy.url.origin }/`
-    // if(!req.url.startsWith(Location)) {
-    //   res.writeHead(307, {
-    //     Location
-    //   })
-    //   return res.end()
-    // }
+    for(const header of ["host", "accept-encoding", "referer", "via"]) {
+      delete proxy.request.headers[header]
+    }
 
     let body = ""
 
@@ -70,25 +60,40 @@ module.exports = (config) => {
           status: 404
         }  
       })
-      body = await proxy.response.text()
+      body = await proxy.response.buffer()
     }
     catch(e) {}
 
     if(!proxy.response.headers["content-type"]) {
-      proxy.response.headers["content-type"] = "text/html"
-      
-      for(const [ type, encoding ] of Object.entries(types)) {
-        if(proxy.url.href.endsWith(type)) {
-          proxy.response.headers["content-type"] = encoding
-        }
+      const setType = (t) => {
+        proxy.response.headers["content-type"] = t
+      }
+
+      let ending = String(proxy.url.pathname).split('.').pop()
+      let m = mime.lookup(ending)
+
+      if(m) {
+        setType(mime.contentType(m))
+      }
+      else if(ending.endsWith("css")) {
+        setType("text/css")
+      }
+      else if(ending == "map") {
+        setType("application/javascript")
+      }
+      else {
+        setType("text/html")
       }
     }
+
     
+
     rewrite.headers(proxy)
     res.writeHead(proxy.response.status, proxy.response.headers)
+    
 
-    if(["text/html", "text/css"].includes(proxy.response.headers["content-type"])) {
-      return res.end(rewrite.body(body, proxy))
+    if(startsWith(["text/html", "text/css"], proxy.response.headers["content-type"])) {
+      return res.end(rewrite.body(body.toString(), proxy))
     }
 
     return res.end(body)

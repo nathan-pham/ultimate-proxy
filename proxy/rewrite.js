@@ -1,4 +1,4 @@
-// const { btoa, atob } = require("./utils")
+const { startsWith } = require("./utils")
 const { JSDOM } = require("jsdom")
 const path = require("path")
 
@@ -43,17 +43,18 @@ const body = (text, proxy) => {
     .replace(/(window|document).location.href/gi, `"${ url.href }"`)
 		.replace(/(window|document).location.hostname/gi, `"${ url.hostname }"`)
 		.replace(/(window|document).location.pathname/gi, `"${ url.path }"`)
+    // .replace(new RegExp(url.href, "gi"), ``)
 		.replace(/location.href/gi, `"${ url.href }"`)
 		.replace(/location.hostname/gi, `"${ url.hostname }"`)
 		.replace(/location.pathname/gi, `"${ url.path }"`)
-    .replace(/url\("\/\/(.*?)"\)/gi, `url("https://` + `$1` + `")`)
-		.replace(/url\('\/\/(.*?)'\)/gi, `url('https://` + `$1` + `')`)
-		.replace(/url\(\/\/(.*?)\)/gi, `url(https://` + `$1` + `)`)
+    .replace(/url\("\/\/(.*?)"\)/gi, `url("http://` + `$1` + `")`)
+		.replace(/url\('\/\/(.*?)'\)/gi, `url('http://` + `$1` + `')`)
+		.replace(/url\(\/\/(.*?)\)/gi, `url(http://` + `$1` + `)`)
 		.replace(/url\("\/(.*?)"\)/gi, `url("${ prefix }${ url.origin }/` + `$1` + `")`)
 		.replace(/url\('\/(.*?)'\)/gi, `url('${ prefix }${ url.origin }/` + `$1` + `')`)
 		.replace(/url\(\/(.*?)\)/gi, `url(${ prefix }${ url.origin }/` + `$1` + `)`)
 
-  if(proxy.response.headers["content-type"] !== "text/html") {
+  if(!startsWith(["text/html"], proxy.response.headers["content-type"])) {
     return proxied_body
   }
 
@@ -66,7 +67,9 @@ const body = (text, proxy) => {
     for(const attribute of attributes) {
       if(element.hasAttribute(attribute)) {
         let original = element.getAttribute(attribute)
-        element.setAttribute(attribute, prefix + resolveLink(original, url.hostname))
+        let resolved = original.startsWith("data:") ? original : prefix + resolveLink(original, url.hostname)
+
+        element.setAttribute(attribute, resolved)
         // element.setAttribute(attribute, resolveLink(original, url.hostname))
 
         // url.hostname

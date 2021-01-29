@@ -1,0 +1,23 @@
+{
+  "name": "express-ejs",
+  "version": "1.0.0",
+  "description": "Express server bootstrapped together with uti-app",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "express",
+    "ejs",
+    "uti-app"
+  ],
+  "author": "Nathan Pham",
+  "license": "MIT",
+  "dependencies": {
+    "ejs": "^3.1.5",
+    "express": "^4.17.1",
+    "jsdom": "^16.4.0",
+    "node-fetch": "^2.6.1",
+    "ws": "^7.4.2"
+  }
+}

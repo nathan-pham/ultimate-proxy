@@ -1,0 +1,13 @@
+#app .app-logo {
+	height: 10rem;
+	width: 10rem;
+	user-select: none;
+	pointer-events: none;
+	border-radius: 0.5rem;
+}
+
+#app .app-caption {
+	font-size: 1.25rem;
+	color: var(--black);
+	margin: 2rem 0 0 0;
+}

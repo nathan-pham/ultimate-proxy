@@ -1,11 +1,3 @@
-/*
-<main>
-      <h1>Ultimate Proxy</h1>
-      <input placeholder="example.com" />
-      <button>submit</button>
-    </main>
-*/
-
 #app {
   display: flex;
   align-items: center;
@@ -18,6 +10,10 @@
   background-color: rgba(255, 255, 255, 0.5);
   display: flex;
   flex-direction: column;
+}
+
+main h1 {
+  margin: 0 0 1rem 0;
 }
 
 main .app-options {
@@ -43,22 +39,6 @@ main .app-options {
   font-size: 1.25rem;
   border-radius: 50%;
 }
-
-/*
-<main>
-      <h1>ultimate-proxy</h1>
-      <input placeholder="example.com" />
-      <div class="app-options">
-        <a href="/help">
-          <i class="fas fa-question"></i>
-        </a>
-        <a href="https://github.com/nathan-pham/ultimate-proxy">
-          <i class="fab fa-github"></i>
-        </a>
-        <button>submit</button>
-      </div>
-    </main>
-*/
 
 main input,
 .app-options button {

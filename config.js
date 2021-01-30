@@ -1,4 +1,4 @@
 module.exports = {
-	port: 8080,
-	mode: "PRODUCTION"
+	port: 8000,
+	mode: "DEVELOPMENT"
 }
